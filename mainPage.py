@@ -29,17 +29,25 @@ class AutoExpensesSplitterFrame(Frame):
         #labels
         titleLabel = Label(topframe, text='Automatic Expense Splitter')
         priceEntryLabel = Label(middleframe, text='Total Amount of the Price: ')
-        mainPersonLabel = Label(middleframe, text='Main Person Paying: ')
+        mainPersonLabel = Label(middleframe, text='Main Person Paying Name: ')
+        firstPersonLabel = Label(middleframe, text='First Person Name: ')
 
         #buttons
-        backButton = Button(topframe, text='Back', command=lambda: self.controller.frameChange(0))
-        newPersonButton = Button(middleframe, text='Add New Person', command=)
-        splitBillsButton = Button(bottomframe, text='Split Da Bills', command=)
+        backButton = Button(topframe, text='Back', command=self.controller.frameChange(0))
+        splitBillsButton = Button(bottomframe, text='Split Da Bills', command=self.splitBillsFunction)
 
         #packing order
         backButton.grid(row=0, column=0, sticky="w")
         titleLabel.grid(row=0, column=1, sticky='nw')
         splitBillsButton.pack(pady=20)
+
+    def newPersonAdding(self):
+        i = 0 #increment
+
+
+    def splitBillsFunction(self):
+        j = 0
+
 
 class ExpensesTrackerFrame(Frame):
     def __init__(self, parent, controller):
@@ -47,7 +55,7 @@ class ExpensesTrackerFrame(Frame):
         testLabel = Label(self, text='test 2') #testing purpose
         testLabel.pack(padx=10)
         self.controller = controller
-        Button(self, text='Back to Main', command=lambda: self.controller.frameChange(0)).pack()
+        Button(self, text='Back to Main', command=self.controller.frameChange(0)).pack()
 
 class MainFrame(Frame):
     def __init__(self, master, controller):
