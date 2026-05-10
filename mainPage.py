@@ -2,16 +2,44 @@ from tkinter import *
 from tkinter import ttk
 
 root = Tk()
+root.title('Expense Splitting')
 
 class AutoExpensesSplitterFrame(Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
-
-
-        testLabel = Label(self, text='test 1') #testing purpose
-        testLabel.pack(padx=10)
         self.controller = controller
-        Button(self, text='Back to Main', command=lambda: self.controller.frameChange(0)).pack()
+
+        #frame sectioning
+        topframe = Frame(self)
+        middleframe = Frame(self)
+        bottomframe = Frame(self)
+
+        #frame packing
+        topframe.pack(fill=BOTH, expand=True)
+        middleframe.pack(fill=BOTH, expand=True)
+        bottomframe.pack(padx=10, pady=10)
+
+        #grid packing for top and middle frame
+        topframe.columnconfigure(0, weight=1)
+        topframe.columnconfigure(1, weight=1)
+        topframe.columnconfigure(2, weight=1) #this is to center column 1
+        middleframe.columnconfigure(0, weight=1)
+        middleframe.columnconfigure(1, weight=1)
+
+        #labels
+        titleLabel = Label(topframe, text='Automatic Expense Splitter')
+        priceEntryLabel = Label(middleframe, text='Total Amount of the Price: ')
+        mainPersonLabel = Label(middleframe, text='Main Person Paying: ')
+
+        #buttons
+        backButton = Button(topframe, text='Back', command=lambda: self.controller.frameChange(0))
+        newPersonButton = Button(middleframe, text='Add New Person', command=)
+        splitBillsButton = Button(bottomframe, text='Split Da Bills', command=)
+
+        #packing order
+        backButton.grid(row=0, column=0, sticky="w")
+        titleLabel.grid(row=0, column=1, sticky='nw')
+        splitBillsButton.pack(pady=20)
 
 class ExpensesTrackerFrame(Frame):
     def __init__(self, parent, controller):
@@ -45,7 +73,7 @@ class MainFrame(Frame):
         expensesTrackerButton = Button(middleframe, text='Expenses Tracker', command=lambda: self.controller.frameChange(2))
 
         #labels
-        title = Label(topframe, text='(title here)')
+        title = Label(topframe, text='Expense Splitting')
 
         #packing
         autoExpensesSplitterButton.pack(padx=10, pady=10)
@@ -65,7 +93,7 @@ class FrameChanging:
         self.currentIndex = index
         self.frameList[self.currentIndex].pack(expand=True, fill=BOTH) #fill in the new page
 
-#function to senter the window
+#function to center the window
 def centerWindow(window, width, height):
     #get screen width and height
     screenWidth = window.winfo_screenwidth()
