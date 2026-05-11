@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+import datetime
 
 root = Tk()
 root.title('Expense Splitting')
@@ -35,7 +36,7 @@ class AutoExpensesSplitterFrame(Frame):
 
         #buttons
         backButton = Button(topframe, text='Back', command=self.controller.frameChange(0))
-        splitBillsButton = Button(bottomframe, text='Split Da Bills', command=self.splitBillsFunction)
+        splitBillsButton = Button(bottomframe, text='Split Da Bills', command=lambda : self.splitBillsFunction(totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry))
 
         #entry
         totalPriceEntry = Entry(middleframe)
@@ -48,12 +49,17 @@ class AutoExpensesSplitterFrame(Frame):
         titleLabel.grid(row=0, column=1, sticky='nw')
         splitBillsButton.pack(pady=20)
 
-    def newPersonAdding(self):
-        i = 0 #increment
+    @staticmethod
+    def splitBillsFunction(totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry):
+        personCounter = 0
+        entry = [firstPersonEntry, secondPersonEntry, thirdPersonEntry]
+        currentTime = datetime.datetime.now().strftime('%x')
+        for i in entry:
+            if entry[i] is None:
+                break
+            else:
+                personCounter += 1
 
-
-    def splitBillsFunction(self):
-        j = 0
 
 
 class ExpensesTrackerFrame(Frame):
