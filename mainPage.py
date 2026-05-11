@@ -29,12 +29,19 @@ class AutoExpensesSplitterFrame(Frame):
         #labels
         titleLabel = Label(topframe, text='Automatic Expense Splitter')
         priceEntryLabel = Label(middleframe, text='Total Amount of the Price: ')
-        mainPersonLabel = Label(middleframe, text='Main Person Paying Name: ')
-        firstPersonLabel = Label(middleframe, text='First Person Name: ')
+        firstPersonLabel = Label(middleframe, text='Main Person Paying Name: ')
+        secondPersonLabel = Label(middleframe, text='First Person Name: ')
+        thirdPersonLabel = Label(middleframe, text='Second Person Name: ')
 
         #buttons
         backButton = Button(topframe, text='Back', command=self.controller.frameChange(0))
         splitBillsButton = Button(bottomframe, text='Split Da Bills', command=self.splitBillsFunction)
+
+        #entry
+        totalPriceEntry = Entry(middleframe)
+        firstPersonEntry = Entry(middleframe)
+        secondPersonEntry = Entry(middleframe)
+        thirdPersonEntry = Entry(middleframe)
 
         #packing order
         backButton.grid(row=0, column=0, sticky="w")
