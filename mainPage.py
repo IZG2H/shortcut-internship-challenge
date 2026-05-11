@@ -29,6 +29,7 @@ class AutoExpensesSplitterFrame(Frame):
 
         #labels
         titleLabel = Label(topframe, text='Automatic Expense Splitter')
+        trackerNameLabel = Label(middleframe, text='Tracker Name: ')
         priceEntryLabel = Label(middleframe, text='Total Amount of the Price: ')
         firstPersonLabel = Label(middleframe, text='Main Person Paying Name: ')
         secondPersonLabel = Label(middleframe, text='First Person Name: ')
@@ -36,24 +37,29 @@ class AutoExpensesSplitterFrame(Frame):
 
         #buttons
         backButton = Button(topframe, text='Back', command=self.controller.frameChange(0))
-        splitBillsButton = Button(bottomframe, text='Split Da Bills', command=lambda : self.splitBillsFunction(totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry))
+        splitBillsButton = Button(bottomframe, text='Split Da Bills', command=lambda : self.splitBillsFunction(entryVars))
 
         #entry
+        trackerNameEntry = Entry(middleframe)
         totalPriceEntry = Entry(middleframe)
         firstPersonEntry = Entry(middleframe)
         secondPersonEntry = Entry(middleframe)
         thirdPersonEntry = Entry(middleframe)
+        entryVars = [trackerNameEntry, totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry]
 
         #packing order
         backButton.grid(row=0, column=0, sticky="w")
         titleLabel.grid(row=0, column=1, sticky='nw')
+        trackerNameLabel.grid(row=0, column=0)
+        trackerNameEntry.grid(row=0, column=1)
         splitBillsButton.pack(pady=20)
 
     @staticmethod
-    def splitBillsFunction(totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry):
+    def splitBillsFunction(entryVars):
         personCounter = 0
-        entry = [firstPersonEntry, secondPersonEntry, thirdPersonEntry]
+        entry = [entryVars[1], entryVars[2], entryVars[3]]
         currentTime = datetime.datetime.now().strftime('%x')
+        name = entryVars[0].get() + "_" + currentTime
         for i in entry:
             if entry[i] is None:
                 break
