@@ -221,7 +221,7 @@ class MainFrame(Frame):
         expensesTrackerButton = Button(middleframe, text='Expenses Tracker', command=lambda: self.controller.frameChange(2))
 
         #labels
-        title = Label(topframe, text='Expense Splitting And Tracking')
+        title = Label(topframe, text='Bills Splitter')
 
         #packing
         autoExpensesSplitterButton.pack(padx=10, pady=10)
