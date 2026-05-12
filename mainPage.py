@@ -1,9 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import datetime
-
-root = Tk()
-root.title('Expense Splitting')
+import databaseConfigure as dbc
 
 class AutoExpensesSplitterFrame(Frame):
     def __init__(self, parent, controller):
@@ -20,61 +18,119 @@ class AutoExpensesSplitterFrame(Frame):
         middleframe.pack(fill=BOTH, expand=True)
         bottomframe.pack(padx=10, pady=10)
 
-        #grid packing for top and middle frame
+        #grid configuring for top and middle frame
         topframe.columnconfigure(0, weight=1)
         topframe.columnconfigure(1, weight=1)
-        topframe.columnconfigure(2, weight=1) #this is to center column 1
+        topframe.columnconfigure(2, weight=1) #this is to center column 1 only
         middleframe.columnconfigure(0, weight=1)
         middleframe.columnconfigure(1, weight=1)
 
         #labels
         titleLabel = Label(topframe, text='Automatic Expense Splitter')
         trackerNameLabel = Label(middleframe, text='Tracker Name: ')
-        priceEntryLabel = Label(middleframe, text='Total Amount of the Price: ')
-        firstPersonLabel = Label(middleframe, text='Main Person Paying Name: ')
-        secondPersonLabel = Label(middleframe, text='First Person Name: ')
-        thirdPersonLabel = Label(middleframe, text='Second Person Name: ')
+        priceEntryLabel = Label(middleframe, text='Total Bills/Price Amount (in numbers): ')
+        firstPersonLabel = Label(middleframe, text='First Person: ')
+        secondPersonLabel = Label(middleframe, text='Second Person: ')
+        thirdPersonLabel = Label(middleframe, text='Third Person: ')
 
         #buttons
-        backButton = Button(topframe, text='Back', command=self.controller.frameChange(0))
-        splitBillsButton = Button(bottomframe, text='Split Da Bills', command=lambda : self.splitBillsFunction(entryVars))
+        backButton = Button(topframe, text='Back', command=lambda : self.controller.frameChange(0))
+        splitBillsButton = Button(bottomframe, text='Split Da Bills', command=lambda : self.splitBillsFunction(entryVars, self.controller))
 
-        #entry
+        #entries
         trackerNameEntry = Entry(middleframe)
         totalPriceEntry = Entry(middleframe)
         firstPersonEntry = Entry(middleframe)
         secondPersonEntry = Entry(middleframe)
         thirdPersonEntry = Entry(middleframe)
-        entryVars = [trackerNameEntry, totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry]
+        entryVars = EntryVars(trackerNameEntry, totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry)
 
         #packing order
         backButton.grid(row=0, column=0, sticky="w")
-        titleLabel.grid(row=0, column=1, sticky='nw')
-        trackerNameLabel.grid(row=0, column=0)
-        trackerNameEntry.grid(row=0, column=1)
+        titleLabel.grid(row=0, column=1, sticky='s')
+
+        trackerNameLabel.grid(row=0, column=0, sticky='e', padx=5)
+        trackerNameEntry.grid(row=0, column=1, sticky='w', padx=5, pady=10)
+
+        priceEntryLabel.grid(row=2, column=0, sticky='e', padx=5)
+        totalPriceEntry.grid(row=2, column=1, sticky='w', padx=5, pady=10)
+
+        firstPersonLabel.grid(row=3, column=0, sticky='e', padx=5)
+        firstPersonEntry.grid(row=3, column=1, sticky='w', padx=5)
+
+        secondPersonLabel.grid(row=4, column=0, sticky='e', padx=5)
+        secondPersonEntry.grid(row=4, column=1, sticky='w', padx=5)
+
+        thirdPersonLabel.grid(row=5, column=0, sticky='e', padx=5)
+        thirdPersonEntry.grid(row=5, column=1, sticky='w', padx=5)
         splitBillsButton.pack(pady=20)
 
     @staticmethod
-    def splitBillsFunction(entryVars):
-        personCounter = 0
-        entry = [entryVars[1], entryVars[2], entryVars[3]]
+    def splitBillsFunction(entryVars, controller):
+        entry = [entryVars.firstPersonEntry.get(), entryVars.secondPersonEntry.get(), entryVars.thirdPersonEntry.get()] #the names filled in
+
+        #for the title
+        trackerName = entryVars.trackerNameEntry
         currentTime = datetime.datetime.now().strftime('%x')
-        name = entryVars[0].get() + "_" + currentTime
-        for i in entry:
-            if entry[i] is None:
+
+        #title creation
+        name = trackerName.get() + "_" + currentTime
+
+        #to check the amount of ppl and divide the total amount of the bills
+        personCounter = len(entry)
+        singlePersonPayment = int(entryVars.totalPriceEntry.get()) / personCounter
+
+        #slot data in a nested array. format for each array is [(person name), (amount need to pay), (how much they paid(this one is zero by default))] (follow database table)
+        data = []
+        for personName in entry:
+            if personName is None:
                 break
             else:
-                personCounter += 1
+                data.append([personName, str(singlePersonPayment), '0'])
 
+        dbc.databaseConfigure(name, data)
+        controller.frameChange(2) #to switch to tracker page
 
+class EntryVars: #just for variable storage, no important functions here
+    def __init__(self, trackerNameEntry, totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry):
+        self.trackerNameEntry = trackerNameEntry
+        self.totalPriceEntry = totalPriceEntry
+        self.firstPersonEntry = firstPersonEntry
+        self.secondPersonEntry = secondPersonEntry
+        self.thirdPersonEntry = thirdPersonEntry
 
 class ExpensesTrackerFrame(Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
-        testLabel = Label(self, text='test 2') #testing purpose
-        testLabel.pack(padx=10)
         self.controller = controller
-        Button(self, text='Back to Main', command=self.controller.frameChange(0)).pack()
+
+        #frame sectioning
+        topframe = Frame(self)
+        middleframe = Frame(self)
+        bottomframe = Frame(self)
+
+        #frame packing
+        topframe.pack(fill=BOTH, expand=True)
+        middleframe.pack(fill=BOTH, expand=True)
+        bottomframe.pack(padx=10, pady=10)
+
+        #grid configuring for top and middle frame
+        topframe.columnconfigure(0, weight=1)
+        topframe.columnconfigure(1, weight=1)
+        topframe.columnconfigure(2, weight=1) #this is to center column 1 only
+        middleframe.columnconfigure(0, weight=1)
+        middleframe.columnconfigure(1, weight=1)
+
+        #labels
+        testLabel = Label(self, text='test 2') #testing purpose (need to change later)
+
+        #buttons
+        Button(self, text='Back to Main', command=lambda : self.controller.frameChange(0)).pack() #testing purposes (need to change later)
+
+        #entries
+
+        #packing order
+        testLabel.pack(padx=10)
 
 class MainFrame(Frame):
     def __init__(self, master, controller):
@@ -87,11 +143,11 @@ class MainFrame(Frame):
         bottomframe = Frame(self)
 
         #frame packing
-        topframe.pack(padx=10, pady=5)
+        topframe.pack(fill=BOTH, expand=True)
         middleframe.pack(fill=BOTH, expand=True)
         bottomframe.pack(padx=10, pady=10)
 
-        #grid packing for middle frame
+        #grid configuring for middle frame
         middleframe.columnconfigure(0, weight=1)
         middleframe.columnconfigure(1, weight=1)
 
@@ -133,6 +189,8 @@ def centerWindow(window, width, height):
     #set window geometry
     window.geometry(f"{width}x{height}+{x}+{y}")
 
+root = Tk()
+root.title('Expense Splitting')
 centerWindow(root, 500, 400)
 app = FrameChanging(root)
 root.mainloop()

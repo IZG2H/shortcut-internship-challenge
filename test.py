@@ -70,10 +70,19 @@
 # root.title('(title here)')
 # root.mainloop() #keeps the windows open and responsive
 
-import datetime
-var1 = 1
-var2 = 2
-var3 = 3
-entryVars = [var1, var2, var3]
-currentTime = datetime.datetime.now().strftime('%x')
-print(str(entryVars[0]) + "_" + currentTime)
+# import datetime
+# var1 = 1
+# var2 = 2
+# var3 = 3
+# entryVars = [var1, var2, var3]
+# currentTime = datetime.datetime.now().strftime('%x')
+# print(str(entryVars[0]) + "_" + currentTime)
+
+test = [0, 1, 2, 3, ]
+data = []
+for j in test:
+    if j is None:
+        break
+    else:
+        data.append([j, 'a', 'b'])
+print(data)
