@@ -1,7 +1,5 @@
 from tkinter import *
-from tkinter import ttk
-import datetime
-import databaseConfigure as dbc
+import databaseRelated as dbc
 
 class AutoExpensesSplitterFrame(Frame):
     def __init__(self, parent, controller):
@@ -46,9 +44,11 @@ class AutoExpensesSplitterFrame(Frame):
         entryVars = EntryVars(trackerNameEntry, totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry)
 
         #packing order
+        #top frame
         backButton.grid(row=0, column=0, sticky="w")
-        titleLabel.grid(row=0, column=1, sticky='s')
+        titleLabel.grid(row=0, column=1)
 
+        #middle frame
         trackerNameLabel.grid(row=0, column=0, sticky='e', padx=5)
         trackerNameEntry.grid(row=0, column=1, sticky='w', padx=5, pady=10)
 
@@ -63,18 +63,16 @@ class AutoExpensesSplitterFrame(Frame):
 
         thirdPersonLabel.grid(row=5, column=0, sticky='e', padx=5)
         thirdPersonEntry.grid(row=5, column=1, sticky='w', padx=5)
+
+        #bottom frame
         splitBillsButton.pack(pady=20)
 
     @staticmethod
     def splitBillsFunction(entryVars, controller):
         entry = [entryVars.firstPersonEntry.get(), entryVars.secondPersonEntry.get(), entryVars.thirdPersonEntry.get()] #the names filled in
 
-        #for the title
-        trackerName = entryVars.trackerNameEntry
-        currentTime = datetime.datetime.now().strftime('%x')
-
-        #title creation
-        name = trackerName.get() + "_" + currentTime
+        #title
+        trackerName = entryVars.trackerNameEntry.get()
 
         #to check the amount of ppl and divide the total amount of the bills
         personCounter = len(entry)
@@ -88,10 +86,10 @@ class AutoExpensesSplitterFrame(Frame):
             else:
                 data.append([personName, str(singlePersonPayment), '0'])
 
-        dbc.databaseConfigure(name, data)
+        dbc.databaseConfigure(trackerName, data)
         controller.frameChange(2) #to switch to tracker page
 
-class EntryVars: #just for variable storage, no important functions here
+class EntryVars: #just for instance variable storage, no important functions here
     def __init__(self, trackerNameEntry, totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry):
         self.trackerNameEntry = trackerNameEntry
         self.totalPriceEntry = totalPriceEntry
@@ -99,7 +97,7 @@ class EntryVars: #just for variable storage, no important functions here
         self.secondPersonEntry = secondPersonEntry
         self.thirdPersonEntry = thirdPersonEntry
 
-class ExpensesTrackerFrame(Frame):
+class ExpenseTrackerFrame(Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -110,27 +108,94 @@ class ExpensesTrackerFrame(Frame):
         bottomframe = Frame(self)
 
         #frame packing
-        topframe.pack(fill=BOTH, expand=True)
-        middleframe.pack(fill=BOTH, expand=True)
-        bottomframe.pack(padx=10, pady=10)
+        topframe.pack(pady=10, fill=X)
+        middleframe.pack(pady=10)
+        bottomframe.pack(fill=BOTH, expand=True)
 
         #grid configuring for top and middle frame
         topframe.columnconfigure(0, weight=1)
         topframe.columnconfigure(1, weight=1)
         topframe.columnconfigure(2, weight=1) #this is to center column 1 only
-        middleframe.columnconfigure(0, weight=1)
-        middleframe.columnconfigure(1, weight=1)
+        bottomframe.columnconfigure(0, weight=1)
+        bottomframe.columnconfigure(1, weight=1)
+        bottomframe.columnconfigure(2, weight=1)
+        bottomframe.columnconfigure(3, weight=1)
 
         #labels
-        testLabel = Label(self, text='test 2') #testing purpose (need to change later)
+        titleLabel = Label(topframe, text='Expense Tracker')
+        trackerNameLabel = Label(middleframe, text='') #get this from the database
+        firstPersonLabel = Label(bottomframe, text='') #same for this
+        secondPersonLabel = Label(bottomframe, text='') #and this
+        thirdPersonLabel = Label(bottomframe, text='') #and oso this
+        firstPersonPaymentAmountLabel = Label(bottomframe, text='') #this too
+        secondPersonPaymentAmountLabel = Label(bottomframe, text='') #yup same as the above
+        thirdPersonPaymentAmountLabel = Label(bottomframe, text='') #yes this too
+        firstPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: ')
+        secondPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: ')
+        thirdPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: ')
 
         #buttons
-        Button(self, text='Back to Main', command=lambda : self.controller.frameChange(0)).pack() #testing purposes (need to change later)
+        backButton = Button(topframe, text='Back', command=lambda : self.controller.frameChange(2))
+        submitButton = Button(bottomframe, text='Update') #add in the database stuff from the file databaseConfigure
 
         #entries
+        firstPersonAmountPaidEntry = Entry(bottomframe)
+        secondPersonAmountPaidEntry = Entry(bottomframe)
+        thirdPersonAmountPaidEntry = Entry(bottomframe)
 
         #packing order
-        testLabel.pack(padx=10)
+        #top frame
+        backButton.grid(row=0, column=0, sticky='w')
+        titleLabel.grid(row=0, column=1)
+
+        #middle frame
+        trackerNameLabel.pack(pady=10)
+
+        #bottom frame
+        firstPersonLabel.grid(row=0, column=0, sticky='e', padx=5)
+        firstPersonPaymentAmountLabel.grid(row=0, column=1, sticky='e', padx=5)
+        firstPersonAmountPaidLabel.grid(row=0, column=2, sticky='e', padx=5)
+        firstPersonAmountPaidEntry.grid(row=0, column=3, sticky='w', padx=5)
+        secondPersonLabel.grid(row=1, column=0, sticky='e', padx=5)
+        secondPersonPaymentAmountLabel.grid(row=1, column=1, sticky='e', padx=5)
+        secondPersonAmountPaidLabel.grid(row=1, column=2, sticky='e', padx=5)
+        secondPersonAmountPaidEntry.grid(row=1, column=3, sticky='w', padx=5)
+        thirdPersonLabel.grid(row=2, column=0, sticky='e', padx=5)
+        thirdPersonPaymentAmountLabel.grid(row=2, column=1, sticky='e', padx=5)
+        thirdPersonAmountPaidLabel.grid(row=2, column=2, sticky='e', padx=5)
+        thirdPersonAmountPaidEntry.grid(row=2, column=3, sticky='w', padx=5)
+        submitButton.grid(row=4, column=3, sticky='w', padx=5, pady=10)
+
+class ExpenseTrackerMenuFrame(Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        #frame sectioning
+        topframe = Frame(self)
+        middleframe = Frame(self)
+        bottomframe = Frame(self)
+
+        #frame packing
+        topframe.pack(pady=10, fill=X)
+        middleframe.pack(pady=10)
+        bottomframe.pack(fill=BOTH, expand=True)
+
+        #grid configuring for top frame
+        topframe.columnconfigure(0, weight=1)
+        topframe.columnconfigure(1, weight=1)
+        topframe.columnconfigure(2, weight=1) #this is just to align the second column
+
+        #labels
+        titleLabel = Label(topframe, text='Expense Tracker Menu')
+
+        #buttons (the menu buttons need to do it like an object)
+        backButton = Button(topframe, text='Back', command=lambda : self.controller.frameChange(0))
+
+        #packing order
+        backButton.grid(row=0, column=0, sticky='w')
+        titleLabel.grid(row=0, column=1)
+
 
 class MainFrame(Frame):
     def __init__(self, master, controller):
@@ -156,7 +221,7 @@ class MainFrame(Frame):
         expensesTrackerButton = Button(middleframe, text='Expenses Tracker', command=lambda: self.controller.frameChange(2))
 
         #labels
-        title = Label(topframe, text='Expense Splitting')
+        title = Label(topframe, text='Expense Splitting And Tracking')
 
         #packing
         autoExpensesSplitterButton.pack(padx=10, pady=10)
@@ -167,7 +232,7 @@ class FrameChanging:
     def __init__(self, root):
         self.root = root
 
-        self.frameList = [MainFrame(root, self), AutoExpensesSplitterFrame(root, self), ExpensesTrackerFrame(root, self)] #setup the frame list
+        self.frameList = [MainFrame(root, self), AutoExpensesSplitterFrame(root, self), ExpenseTrackerMenuFrame(root, self)] #setup the frame list
         self.currentIndex = 0 #default frame page
         self.frameList[0].pack(expand=True, fill=BOTH)
 
