@@ -78,6 +78,7 @@
 # currentTime = datetime.datetime.now().strftime('%x')
 # print(str(entryVars[0]) + "_" + currentTime)
 
+i = 0
 test = [0, 1, 2, 3, ]
 data = []
 for j in test:

@@ -1,5 +1,18 @@
 from tkinter import *
+from tkinter import messagebox
 import databaseRelated as dbc
+
+class EntryVars: #just for instance variable storage, no important functions here
+    def __init__(self, trackerNameEntry, totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry):
+        self.trackerNameEntry = trackerNameEntry
+        self.totalPriceEntry = totalPriceEntry
+        self.firstPersonEntry = firstPersonEntry
+        self.secondPersonEntry = secondPersonEntry
+        self.thirdPersonEntry = thirdPersonEntry
+
+class Vars:
+    def __init__(self, titleName):
+        self.titleName = titleName
 
 class AutoExpensesSplitterFrame(Frame):
     def __init__(self, parent, controller):
@@ -68,7 +81,7 @@ class AutoExpensesSplitterFrame(Frame):
         splitBillsButton.pack(pady=20)
 
     @staticmethod
-    def splitBillsFunction(entryVars, controller):
+    def splitBillsFunction(entryVars, controller): #improve this
         entry = [entryVars.firstPersonEntry.get(), entryVars.secondPersonEntry.get(), entryVars.thirdPersonEntry.get()] #the names filled in
 
         #title
@@ -86,21 +99,14 @@ class AutoExpensesSplitterFrame(Frame):
             else:
                 data.append([personName, str(singlePersonPayment), '0'])
 
-        dbc.databaseConfigure(trackerName, data)
+        dbc.databaseInsert(trackerName, data)
         controller.frameChange(2) #to switch to tracker page
 
-class EntryVars: #just for instance variable storage, no important functions here
-    def __init__(self, trackerNameEntry, totalPriceEntry, firstPersonEntry, secondPersonEntry, thirdPersonEntry):
-        self.trackerNameEntry = trackerNameEntry
-        self.totalPriceEntry = totalPriceEntry
-        self.firstPersonEntry = firstPersonEntry
-        self.secondPersonEntry = secondPersonEntry
-        self.thirdPersonEntry = thirdPersonEntry
-
 class ExpenseTrackerFrame(Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, titleName):
         super().__init__(parent)
         self.controller = controller
+        self.titleName = titleName
 
         #frame sectioning
         topframe = Frame(self)
@@ -123,25 +129,29 @@ class ExpenseTrackerFrame(Frame):
 
         #labels
         titleLabel = Label(topframe, text='Expense Tracker')
-        trackerNameLabel = Label(middleframe, text='') #get this from the database
-        firstPersonLabel = Label(bottomframe, text='') #same for this
-        secondPersonLabel = Label(bottomframe, text='') #and this
-        thirdPersonLabel = Label(bottomframe, text='') #and oso this
-        firstPersonPaymentAmountLabel = Label(bottomframe, text='') #this too
-        secondPersonPaymentAmountLabel = Label(bottomframe, text='') #yup same as the above
-        thirdPersonPaymentAmountLabel = Label(bottomframe, text='') #yes this too
         firstPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: ')
         secondPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: ')
         thirdPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: ')
 
         #buttons
         backButton = Button(topframe, text='Back', command=lambda : self.controller.frameChange(2))
-        submitButton = Button(bottomframe, text='Update') #add in the database stuff from the file databaseConfigure
+
+        #function dependent button
+        submitButton = Button(bottomframe, text='Update', command=lambda : self.amountUpdate()) #add in the database stuff from the file databaseConfigure
+
+        #function dependent labels (just for me to see clearly)
+        self.trackerNameLabel = Label(middleframe, text='') #get this from the database
+        self.firstPersonLabel = Label(bottomframe, text='') #same for this
+        self.secondPersonLabel = Label(bottomframe, text='') #and this
+        self.thirdPersonLabel = Label(bottomframe, text='') #and oso this
+        self.firstPersonPaymentAmountLabel = Label(bottomframe, text='') #this too
+        self.secondPersonPaymentAmountLabel = Label(bottomframe, text='') #yup same as the above
+        self.thirdPersonPaymentAmountLabel = Label(bottomframe, text='') #yes this too
 
         #entries
-        firstPersonAmountPaidEntry = Entry(bottomframe)
-        secondPersonAmountPaidEntry = Entry(bottomframe)
-        thirdPersonAmountPaidEntry = Entry(bottomframe)
+        self.firstPersonAmountPaidEntry = Entry(bottomframe)
+        self.secondPersonAmountPaidEntry = Entry(bottomframe)
+        self.thirdPersonAmountPaidEntry = Entry(bottomframe)
 
         #packing order
         #top frame
@@ -149,22 +159,81 @@ class ExpenseTrackerFrame(Frame):
         titleLabel.grid(row=0, column=1)
 
         #middle frame
-        trackerNameLabel.pack(pady=10)
+        self.trackerNameLabel.pack(pady=10)
 
         #bottom frame
-        firstPersonLabel.grid(row=0, column=0, sticky='e', padx=5)
-        firstPersonPaymentAmountLabel.grid(row=0, column=1, sticky='e', padx=5)
+        self.firstPersonLabel.grid(row=0, column=0, sticky='e', padx=5)
+        self.firstPersonPaymentAmountLabel.grid(row=0, column=1, sticky='e', padx=5)
         firstPersonAmountPaidLabel.grid(row=0, column=2, sticky='e', padx=5)
-        firstPersonAmountPaidEntry.grid(row=0, column=3, sticky='w', padx=5)
-        secondPersonLabel.grid(row=1, column=0, sticky='e', padx=5)
-        secondPersonPaymentAmountLabel.grid(row=1, column=1, sticky='e', padx=5)
+        self.firstPersonAmountPaidEntry.grid(row=0, column=3, sticky='w', padx=5)
+
+        self.secondPersonLabel.grid(row=1, column=0, sticky='e', padx=5)
+        self.secondPersonPaymentAmountLabel.grid(row=1, column=1, sticky='e', padx=5)
         secondPersonAmountPaidLabel.grid(row=1, column=2, sticky='e', padx=5)
-        secondPersonAmountPaidEntry.grid(row=1, column=3, sticky='w', padx=5)
-        thirdPersonLabel.grid(row=2, column=0, sticky='e', padx=5)
-        thirdPersonPaymentAmountLabel.grid(row=2, column=1, sticky='e', padx=5)
+        self.secondPersonAmountPaidEntry.grid(row=1, column=3, sticky='w', padx=5)
+
+        self.thirdPersonLabel.grid(row=2, column=0, sticky='e', padx=5)
+        self.thirdPersonPaymentAmountLabel.grid(row=2, column=1, sticky='e', padx=5)
         thirdPersonAmountPaidLabel.grid(row=2, column=2, sticky='e', padx=5)
-        thirdPersonAmountPaidEntry.grid(row=2, column=3, sticky='w', padx=5)
+        self.thirdPersonAmountPaidEntry.grid(row=2, column=3, sticky='w', padx=5)
+
         submitButton.grid(row=4, column=3, sticky='w', padx=5, pady=10)
+
+        #function
+        self.updateLabelData()
+
+    def updateLabelData(self):
+        import sqlite3
+
+        con = sqlite3.connect('expensesTracking.db')
+        cur = con.cursor()
+        cur.execute(f'SELECT * FROM "{self.titleName}"')
+        rows = cur.fetchall()
+        con.close()
+
+        if not rows:
+            return
+
+        self.trackerNameLabel.config(text=f"{self.titleName}") #set the title
+
+        for i in range(3):
+            nameLabel = getattr(self, f'{"first" if i == 0 else "second" if i == 1 else "third"}PersonLabel')
+            amountLabel = getattr(self, f'{"first" if i == 0 else "second" if i == 1 else "third"}PersonPaymentAmountLabel')
+            entry = getattr(self, f'{"first" if i == 0 else "second" if i == 1 else "third"}PersonAmountPaidEntry')
+
+            name, needed, paid = rows[i]
+            nameLabel.config(text=f'{name}: ')
+            amountLabel.config(text=f'RM{needed}')
+            entry.delete(0, END)
+            entry.insert(0, str(paid))
+
+            nameLabel.grid()
+            amountLabel.grid()
+            entry.grid()
+
+    def amountUpdate(self):
+        import sqlite3
+        con = sqlite3.connect('expensesTracking.db')
+        cur = con.cursor()
+
+        #get name list
+        cur.execute(f'SELECT name FROM "{self.titleName}"')
+        executeFunction = cur.fetchall()
+        names = [row[0] for row in executeFunction]
+
+        #update each person paid amount
+        entries = [self.firstPersonAmountPaidEntry, self.secondPersonAmountPaidEntry, self.thirdPersonAmountPaidEntry]
+        for i, name in enumerate(names):
+            if i >= len(entries):
+                break
+            newAmount = entries[i].get().strip()
+            if newAmount:
+                newAmount = float(newAmount)
+                cur.execute(f'UPDATE "{self.titleName}" SET amountPaid = ? WHERE name = ?', (newAmount, name))
+        con.commit()
+        con.close()
+        messagebox.showinfo("Success", "Amounts updated successfully")
+        self.updateLabelData() #refresh the page
 
 class ExpenseTrackerMenuFrame(Frame):
     def __init__(self, parent, controller):
@@ -173,13 +242,11 @@ class ExpenseTrackerMenuFrame(Frame):
 
         #frame sectioning
         topframe = Frame(self)
-        middleframe = Frame(self)
-        bottomframe = Frame(self)
+        self.middleframe = Frame(self)
 
         #frame packing
         topframe.pack(pady=10, fill=X)
-        middleframe.pack(pady=10)
-        bottomframe.pack(fill=BOTH, expand=True)
+        self.middleframe.pack(pady=10)
 
         #grid configuring for top frame
         topframe.columnconfigure(0, weight=1)
@@ -196,6 +263,31 @@ class ExpenseTrackerMenuFrame(Frame):
         backButton.grid(row=0, column=0, sticky='w')
         titleLabel.grid(row=0, column=1)
 
+    def refreshTrackerButtons(self):
+        #destroy all widgets in middleframe
+        for widget in self.middleframe.winfo_children():
+            widget.destroy()
+
+        self.loadTrackers(self.middleframe)
+
+    def loadTrackers(self, container):
+        import sqlite3
+        from tkinter import Button
+
+        def onTrackersPressed(trackerName):
+            self.controller.setCurrentTracker(trackerName)
+            self.controller.frameChange(3)
+
+        con = sqlite3.connect('expensesTracking.db')
+        cur = con.cursor()
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name")
+        executeReturn = cur.fetchall()
+        allTables = [row[0] for row in executeReturn]
+        con.close()
+
+        for tname in allTables:
+            button = Button(container, text=tname, command=lambda name=tname : onTrackersPressed(name))
+            button.pack(pady=5)
 
 class MainFrame(Frame):
     def __init__(self, master, controller):
@@ -231,13 +323,24 @@ class MainFrame(Frame):
 class FrameChanging:
     def __init__(self, root):
         self.root = root
+        self.currentTracker = None #to store tracker name
 
-        self.frameList = [MainFrame(root, self), AutoExpensesSplitterFrame(root, self), ExpenseTrackerMenuFrame(root, self)] #setup the frame list
-        self.currentIndex = 0 #default frame page
+        self.frameList = [MainFrame(root, self), AutoExpensesSplitterFrame(root, self), ExpenseTrackerMenuFrame(root, self), None] #setup the frame list
+        self.currentIndex = 0 #MainFrame is the default frame page
         self.frameList[0].pack(expand=True, fill=BOTH)
+
+    def setCurrentTracker(self, trackerName):
+        self.currentTracker = trackerName
 
     def frameChange(self, index):
         self.frameList[self.currentIndex].pack_forget() #make the page blank
+        if index == 2 and self.frameList[2] is not None:
+            self.frameList[2].refreshTrackerButtons()
+
+        if index == 3:
+            if self.frameList[3] is not None:
+                self.frameList[3].destroy()
+            self.frameList[3] = ExpenseTrackerFrame(self.root, self, self.currentTracker)
         self.currentIndex = index
         self.frameList[self.currentIndex].pack(expand=True, fill=BOTH) #fill in the new page
 
