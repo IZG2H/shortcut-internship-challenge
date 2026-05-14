@@ -79,11 +79,12 @@
 # print(str(entryVars[0]) + "_" + currentTime)
 
 i = 0
-test = [0, 1, 2, 3, ]
-data = []
-for j in test:
-    if j is None:
-        break
-    else:
-        data.append([j, 'a', 'b'])
-print(data)
+data = ['hel']
+# for j in test:
+#     if j is None:
+#         break
+#     else:
+#         data.append([j, 'a', 'b'])
+
+b, bb, bbb = data[i]
+print(b + ' ' + bb + ' ' + bbb)

@@ -129,9 +129,9 @@ class ExpenseTrackerFrame(Frame):
 
         #labels
         titleLabel = Label(topframe, text='Expense Tracker')
-        firstPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: ')
-        secondPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: ')
-        thirdPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: ')
+        firstPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: RM')
+        secondPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: RM')
+        thirdPersonAmountPaidLabel = Label(bottomframe, text='Amount Paid: RM')
 
         #buttons
         backButton = Button(topframe, text='Back', command=lambda : self.controller.frameChange(2))
@@ -201,6 +201,7 @@ class ExpenseTrackerFrame(Frame):
             amountLabel = getattr(self, f'{"first" if i == 0 else "second" if i == 1 else "third"}PersonPaymentAmountLabel')
             entry = getattr(self, f'{"first" if i == 0 else "second" if i == 1 else "third"}PersonAmountPaidEntry')
 
+
             name, needed, paid = rows[i]
             nameLabel.config(text=f'{name}: ')
             amountLabel.config(text=f'RM{needed}')
@@ -216,23 +217,23 @@ class ExpenseTrackerFrame(Frame):
         con = sqlite3.connect('expensesTracking.db')
         cur = con.cursor()
 
-        #get name list
-        cur.execute(f'SELECT name FROM "{self.titleName}"')
+        cur.execute(f'SELECT name, amountNeededToPay FROM "{self.titleName}"') #output looks like this [(name, amountNeededtoPay,), ...}]
         executeFunction = cur.fetchall()
-        names = [row[0] for row in executeFunction]
+        names = [row[0] for row in executeFunction] #get name list
+        payAmount = [row[1] for row in executeFunction] #get amount payment list
 
         #update each person paid amount
         entries = [self.firstPersonAmountPaidEntry, self.secondPersonAmountPaidEntry, self.thirdPersonAmountPaidEntry]
-        for i, name in enumerate(names):
+        for i, (name, amount) in enumerate(zip(names, payAmount)):
             if i >= len(entries):
                 break
             newAmount = entries[i].get().strip()
             if newAmount:
                 newAmount = float(newAmount)
-                cur.execute(f'UPDATE "{self.titleName}" SET amountPaid = ? WHERE name = ?', (newAmount, name))
+                cur.execute(f'UPDATE "{self.titleName}" SET amountPaid = ?, amountNeededToPay = ? WHERE name = ?', (newAmount, float(amount) - newAmount,name))
         con.commit()
         con.close()
-        messagebox.showinfo("Success", "Amounts updated successfully")
+        messagebox.showinfo("Success", "Amount updated successfully")
         self.updateLabelData() #refresh the page
 
 class ExpenseTrackerMenuFrame(Frame):
